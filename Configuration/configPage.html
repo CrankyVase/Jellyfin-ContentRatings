@@ -1,102 +1,113 @@
-<div class="pluginConfigurationPage">
-    <form class="formDialog" is="emby-form" method="post">
-        <div class="formDialogHeader">
-            <h1>Content Ratings</h1>
-        </div>
-        
-        <div class="formDialogContent">
-            <div class="formDialogSection">
-                <h2>Features</h2>
-                <div class="formDialogRow">
-                    <label class="formDialogLabel" for="EnableContentRatings">Content Ratings (MPAA, BBFC, etc.)</label>
-                    <div class="formDialogControl">
-                        <label class="toggleSwitch">
-                            <input type="checkbox" id="EnableContentRatings" name="EnableContentRatings" checked>
-                            <span class="toggleSwitchSlider"></span>
-                        </label>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ContentRatings</title>
+</head>
+<body>
+    <div id="ContentRatingsConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
+        <div data-role="content">
+            <div class="content-primary">
+                <form id="ContentRatingsConfigForm">
+                    <div class="formDialogSection">
+                        <h2>Features</h2>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label class="emby-checkbox-label">
+                                <input id="EnableContentRatings" name="EnableContentRatings" type="checkbox" is="emby-checkbox" />
+                                <span>Content Ratings (MPAA, BBFC, FSK, etc.)</span>
+                            </label>
+                        </div>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label class="emby-checkbox-label">
+                                <input id="EnableBudgetRevenue" name="EnableBudgetRevenue" type="checkbox" is="emby-checkbox" />
+                                <span>Budget & Revenue Stats</span>
+                            </label>
+                        </div>
+                        <div class="checkboxContainer checkboxContainer-withDescription">
+                            <label class="emby-checkbox-label">
+                                <input id="EnableAgeRatings" name="EnableAgeRatings" type="checkbox" is="emby-checkbox" />
+                                <span>Age Ratings by Region</span>
+                            </label>
+                        </div>
                     </div>
-                </div>
-                <div class="formDialogRow">
-                    <label class="formDialogLabel" for="EnableBudgetRevenue">Budget & Revenue Stats</label>
-                    <div class="formDialogControl">
-                        <label class="toggleSwitch">
-                            <input type="checkbox" id="EnableBudgetRevenue" name="EnableBudgetRevenue" checked>
-                            <span class="toggleSwitchSlider"></span>
-                        </label>
+
+                    <div class="formDialogSection">
+                        <h2>Cache Settings</h2>
+                        <div class="inputContainer">
+                            <label class="inputLabel inputLabelUnfocused" for="CacheHours">Cache Duration (hours)</label>
+                            <input id="CacheHours" name="CacheHours" type="number" is="emby-input" min="1" max="168" />
+                            <div class="fieldDescription">How long to cache movie data before refetching (1-168 hours)</div>
+                        </div>
+                        <div class="selectContainer">
+                            <label class="selectLabel" for="PreferredRegion">Preferred Region for Ratings</label>
+                            <select is="emby-select" id="PreferredRegion" name="PreferredRegion" class="emby-select-withcolor emby-select">
+                                <option value="US">United States (MPAA)</option>
+                                <option value="GB">United Kingdom (BBFC)</option>
+                                <option value="CA">Canada</option>
+                                <option value="AU">Australia</option>
+                                <option value="DE">Germany (FSK)</option>
+                                <option value="FR">France</option>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="formDialogRow">
-                    <label class="formDialogLabel" for="EnableAgeRatings">Age Ratings by Region</label>
-                    <div class="formDialogControl">
-                        <label class="toggleSwitch">
-                            <input type="checkbox" id="EnableAgeRatings" name="EnableAgeRatings" checked>
-                            <span class="toggleSwitchSlider"></span>
-                        </label>
+
+                    <div class="formDialogSection">
+                        <h2>Data Source</h2>
+                        <div class="fieldDescription">
+                            This plugin uses <strong>Wikidata</strong> (Wikimedia's free knowledge base) as its data source. No API keys required!
+                        </div>
+                        <div class="fieldDescription">
+                            Data includes: MPAA ratings, budget, box office revenue, release dates, genres, and country-specific age ratings where available.
+                        </div>
+                        <a href="https://www.wikidata.org" target="_blank" is="emby-button" class="button-default block emby-button">
+                            <span>Visit Wikidata</span>
+                        </a>
                     </div>
-                </div>
+
+                    <div>
+                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <div class="formDialogSection">
-                <h2>Cache Settings</h2>
-                <div class="formDialogRow">
-                    <label class="formDialogLabel" for="CacheHours">Cache Duration (hours)</label>
-                    <div class="formDialogControl">
-                        <input type="number" id="CacheHours" name="CacheHours" min="1" max="168" value="24" class="textbox" />
-                    </div>
-                </div>
-                <div class="formDialogRow">
-                    <label class="formDialogLabel" for="PreferredRegion">Preferred Region for Ratings</label>
-                    <div class="formDialogControl">
-                        <select id="PreferredRegion" name="PreferredRegion" class="textbox">
-                            <option value="US">United States (MPAA)</option>
-                            <option value="GB">United Kingdom (BBFC)</option>
-                            <option value="CA">Canada</option>
-                            <option value="AU">Australia</option>
-                            <option value="DE">Germany (FSK)</option>
-                            <option value="FR">France</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="formDialogSection">
-                <h2>Data Source</h2>
-                <div class="formDialogRow">
-                    <div class="formDialogControl">
-                        <p class="formDialogHint">This plugin uses <strong>Wikidata</strong> (Wikimedia's free knowledge base) as its data source. No API keys required!</p>
-                        <p class="formDialogHint">Data includes: MPAA ratings, budget, box office revenue, release dates, genres, and country-specific age ratings where available.</p>
-                        <a href="https://www.wikidata.org" target="_blank" class="btn btn-default">Visit Wikidata</a>
-                    </div>
-                </div>
-            </div>
         </div>
+        <script type="text/javascript">
+            var ContentRatingsConfig = {
+                pluginUniqueId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890'
+            };
 
-        <div class="formDialogFooter">
-            <button type="submit" class="btn btn-primary submit">Save</button>
-            <button type="button" class="btn btn-default cancel">Cancel</button>
-        </div>
-    </form>
-</div>
+            document.querySelector('#ContentRatingsConfigPage')
+                .addEventListener('pageshow', function() {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(ContentRatingsConfig.pluginUniqueId).then(function (config) {
+                        document.querySelector('#EnableContentRatings').checked = config.EnableContentRatings;
+                        document.querySelector('#EnableBudgetRevenue').checked = config.EnableBudgetRevenue;
+                        document.querySelector('#EnableAgeRatings').checked = config.EnableAgeRatings;
+                        document.querySelector('#CacheHours').value = config.CacheHours;
+                        document.querySelector('#PreferredRegion').value = config.PreferredRegion;
+                        Dashboard.hideLoadingMsg();
+                    });
+                });
 
-<script>
-    document.querySelector('form[is="emby-form"]').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const form = this;
-        const data = new FormData(form);
-        const config = {};
-        for (const [key, value] of data.entries()) {
-            config[key] = value === 'on' ? true : value;
-        }
-        
-        // Convert checkboxes
-        ['EnableContentRatings', 'EnableBudgetRevenue', 'EnableAgeRatings'].forEach(key => {
-            config[key] = form.querySelector('#' + key).checked;
-        });
-        
-        config.CacheHours = parseInt(config.CacheHours) || 24;
-        
-        ApiClient.updatePluginConfiguration('ContentRatings', config).then(function() {
-            Dashboard.processPluginConfigurationUpdateResult({ Success: true });
-        });
-    });
-</script>
+            document.querySelector('#ContentRatingsConfigForm')
+                .addEventListener('submit', function(e) {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(ContentRatingsConfig.pluginUniqueId).then(function (config) {
+                        config.EnableContentRatings = document.querySelector('#EnableContentRatings').checked;
+                        config.EnableBudgetRevenue = document.querySelector('#EnableBudgetRevenue').checked;
+                        config.EnableAgeRatings = document.querySelector('#EnableAgeRatings').checked;
+                        config.CacheHours = parseInt(document.querySelector('#CacheHours').value) || 24;
+                        config.PreferredRegion = document.querySelector('#PreferredRegion').value;
+                        ApiClient.updatePluginConfiguration(ContentRatingsConfig.pluginUniqueId, config).then(function (result) {
+                            Dashboard.processPluginConfigurationUpdateResult(result);
+                        });
+                    });
+
+                    e.preventDefault();
+                    return false;
+                });
+        </script>
+    </div>
+</body>
+</html>
