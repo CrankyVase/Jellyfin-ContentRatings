@@ -11,14 +11,13 @@
     <Description>Adds content ratings, budget/revenue stats, and age ratings to movies using free APIs (Wikidata)</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/jellyfin/jellyfin</PackageProjectUrl>
+    <NoWarn>$(NoWarn);NU1903</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Jellyfin.Controller" Version="10.10.0" />
     <PackageReference Include="Jellyfin.Model" Version="10.10.0" />
-    <PackageReference Include="Jellyfin.Plugin" Version="10.10.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="System.Text.Json" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
