@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Jellyfin.Plugin.ContentRatings.Configuration;
 using Jellyfin.Plugin.ContentRatings.Models;
-using MediaBrowser.Model.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Jellyfin.Plugin.ContentRatings.Services;

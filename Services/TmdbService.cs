@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Jellyfin.Plugin.ContentRatings.Configuration;
 using Jellyfin.Plugin.ContentRatings.Models;
 using MediaBrowser.Common.Net;

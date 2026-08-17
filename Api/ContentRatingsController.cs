@@ -2,7 +2,6 @@ using Jellyfin.Plugin.ContentRatings.Models;
 using Jellyfin.Plugin.ContentRatings.Services;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Library;
-using MediaBrowser.WebDashboard.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
