@@ -2,7 +2,7 @@ using Jellyfin.Plugin.ContentRatings.Configuration;
 using Jellyfin.Plugin.ContentRatings.Models;
 using Jellyfin.Plugin.ContentRatings.Services;
 using MediaBrowser.Controller.Entities.Movies;
-using MediaBrowser.Controller.Providers;
+using MediaBrowser.Model.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

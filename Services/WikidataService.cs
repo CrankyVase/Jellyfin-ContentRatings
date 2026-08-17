@@ -171,8 +171,8 @@ public class WikidataService : IWikidataService
         var data = new WikidataMovieData
         {
             EntityId = entityId,
-            Title = entity.Labels?.En?.Value ?? string.Empty,
-            Description = entity.Descriptions?.En?.Value ?? string.Empty
+            Title = entity.Labels?.TryGetValue("en", out var label) == true ? label.Value : string.Empty,
+            Description = entity.Descriptions?.TryGetValue("en", out var desc) == true ? desc.Value : string.Empty
         };
 
         if (entity.Claims == null) return data;
