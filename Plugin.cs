@@ -1,7 +1,6 @@
 using Jellyfin.Plugin.ContentRatings.Configuration;
 using Jellyfin.Plugin.ContentRatings.Services;
-using MediaBrowser.Model;
-using MediaBrowser.Model.Plugins;
+using MediaBrowser.Controller.Plugins;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 
