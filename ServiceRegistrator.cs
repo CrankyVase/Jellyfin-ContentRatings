@@ -1,3 +1,4 @@
+using Jellyfin.Plugin.ContentRatings.Api;
 using Jellyfin.Plugin.ContentRatings.Services;
 using MediaBrowser.Controller.Plugins;
 using MediaBrowser.Controller;
@@ -18,5 +19,9 @@ public class ServiceRegistrator : IPluginServiceRegistrator
 
         serviceCollection.AddSingleton<ICacheService, CacheService>();
         serviceCollection.AddSingleton<IContentRatingsProvider, ContentRatingsProvider>();
+
+        // Register API controllers
+        serviceCollection.AddControllers()
+            .AddApplicationPart(typeof(ContentRatingsController).Assembly);
     }
 }
