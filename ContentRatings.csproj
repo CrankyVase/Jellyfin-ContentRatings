@@ -6,7 +6,9 @@
     <Nullable>enable</Nullable>
     <AssemblyName>Jellyfin.Plugin.ContentRatings</AssemblyName>
     <RootNamespace>Jellyfin.Plugin.ContentRatings</RootNamespace>
-    <Version>1.0.11</Version>
+    <Version>1.0.12</Version>
+    <AssemblyVersion>1.0.12.0</AssemblyVersion>
+    <FileVersion>1.0.12.0</FileVersion>
     <Authors>ContentRatings</Authors>
     <Description>Adds content ratings, budget/revenue stats, and age ratings to movies using free APIs (Wikidata)</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
