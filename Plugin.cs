@@ -4,6 +4,7 @@ using Jellyfin.Plugin.ContentRatings.Configuration;
 using Jellyfin.Plugin.ContentRatings.Services;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
+using MediaBrowser.Controller;
 using MediaBrowser.Controller.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
@@ -41,7 +42,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 
     public class ServiceRegistrator : IPluginServiceRegistrator
     {
-        public void RegisterServices(IServiceCollection serviceCollection, IServerApplicationHost applicationHost)
+        public void RegisterServices(IServiceCollection serviceCollection, MediaBrowser.Controller.IServerApplicationHost applicationHost)
         {
             serviceCollection.AddHttpClient<IWikidataService, WikidataService>(client =>
             {
