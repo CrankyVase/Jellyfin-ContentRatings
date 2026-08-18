@@ -1,7 +1,7 @@
 {
   "Name": "ContentRatings",
   "Description": "Adds content ratings (MPAA, etc.), budget/revenue stats, and age ratings to movies using free APIs (Wikidata) - no API keys required",
-  "Version": "1.0.12",
+  "Version": "1.0.13",
   "TargetAbi": "10.10.0.0",
   "Guid": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   "Author": "ContentRatings",
