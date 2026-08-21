@@ -14,7 +14,7 @@
                         <div class="checkboxContainer checkboxContainer-withDescription">
                             <label class="emby-checkbox-label">
                                 <input id="EnableContentRatings" name="EnableContentRatings" type="checkbox" is="emby-checkbox" />
-                                <span>Content Ratings (MPAA, BBFC, FSK, etc.)</span>
+                                <span>Content Advisory (MPA rating + nudity/violence/language descriptors, when available)</span>
                             </label>
                         </div>
                         <div class="checkboxContainer checkboxContainer-withDescription">
@@ -57,7 +57,7 @@
                             This plugin uses <strong>Wikidata</strong> (Wikimedia's free knowledge base) as its data source. No API keys required!
                         </div>
                         <div class="fieldDescription">
-                            Data includes: MPAA ratings, budget, box office revenue, release dates, genres, and country-specific age ratings where available.
+                            Data includes: MPA film rating, official content descriptors (e.g. "Nudity", "Some sexuality", "Strong violence", "Language", "Drug use") when Wikidata has them recorded, budget, box office revenue, release dates, and genres. Coverage of content descriptors varies by title &mdash; not every movie has them filled in on Wikidata.
                         </div>
                         <a href="https://www.wikidata.org" target="_blank" is="emby-button" class="button-default block emby-button">
                             <span>Visit Wikidata</span>

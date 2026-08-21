@@ -8,6 +8,7 @@ using MediaBrowser.Controller;
 using MediaBrowser.Controller.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Jellyfin.Plugin.ContentRatings;
@@ -26,7 +27,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 
     public override Guid Id => Guid.Parse("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
 
-    public override string Description => "Adds content ratings (MPAA, etc.), budget/revenue stats, and age ratings to movies using free APIs (Wikidata) - no API keys required";
+    public override string Description => "Adds content advisory descriptors (nudity, violence, language), MPA ratings, and budget/revenue stats to movies using Wikidata - no API keys required";
 
     public IEnumerable<PluginPageInfo> GetPages()
     {
@@ -53,6 +54,7 @@ public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 
             serviceCollection.AddSingleton<ICacheService, CacheService>();
             serviceCollection.AddSingleton<IContentRatingsProvider, ContentRatingsProvider>();
+            serviceCollection.AddSingleton<IStartupFilter, ClientScriptStartupFilter>();
 
             serviceCollection.AddControllers()
                 .AddApplicationPart(typeof(ContentRatingsController).Assembly);

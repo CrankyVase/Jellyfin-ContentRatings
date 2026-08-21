@@ -111,20 +111,18 @@ public class ContentRatingsProvider : IContentRatingsProvider
     {
         var ratings = new List<ContentRatingData>();
 
-        if (!string.IsNullOrEmpty(wikidata.MpaaRating))
+        if (!string.IsNullOrEmpty(wikidata.MpaaRating) || wikidata.ContentDescriptors.Count > 0)
         {
             ratings.Add(new ContentRatingData
             {
-                Source = "Wikidata",
+                Source = "Wikidata (MPA)",
                 Rating = wikidata.MpaaRating,
                 Description = GetMpaaDescription(wikidata.MpaaRating),
                 Region = "US",
-                AgeRating = wikidata.MpaaRating
+                AgeRating = wikidata.MpaaRating,
+                Descriptors = wikidata.ContentDescriptors
             });
         }
-
-        // Try to get more detailed content descriptors from Wikidata
-        // This would require additional property lookups (P1659, etc.)
 
         return ratings;
     }

@@ -9,7 +9,7 @@ namespace Jellyfin.Plugin.ContentRatings.Api;
 
 [ApiController]
 [Route("ContentRatings")]
-[Authorize(Policy = "RequiresElevation")]
+[Authorize]
 public class ContentRatingsController : ControllerBase
 {
     private readonly IContentRatingsProvider _provider;
@@ -44,6 +44,7 @@ public class ContentRatingsController : ControllerBase
     }
 
     [HttpPost("Movie/{itemId}/Refresh")]
+    [Authorize(Policy = "RequiresElevation")]
     public async Task<ActionResult<MovieEnhancedData>> RefreshMovieData(Guid itemId, CancellationToken cancellationToken)
     {
         var movie = _libraryManager.GetItemById(itemId) as Movie;
@@ -67,5 +68,21 @@ public class ContentRatingsController : ControllerBase
     public ActionResult<object> GetConfig()
     {
         return Ok(new { enabled = true });
+    }
+
+    [HttpGet("ClientScript")]
+    [AllowAnonymous]
+    public ActionResult GetClientScript()
+    {
+        var assembly = typeof(ContentRatingsController).Assembly;
+        var resourceName = $"{typeof(Plugin).Namespace}.Web.content-ratings.js";
+        var stream = assembly.GetManifestResourceStream(resourceName);
+
+        if (stream == null)
+        {
+            return NotFound();
+        }
+
+        return File(stream, "application/javascript");
     }
 }

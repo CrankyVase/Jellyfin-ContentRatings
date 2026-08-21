@@ -111,28 +111,18 @@ public class WikidataService : IWikidataService
     {
         try
         {
-            var url = $"?action=wbsearchentities&search={Uri.EscapeDataString(imdbId)}&language=en&format=json&type=item&limit=5";
+            // wbsearchentities is a label/alias text search and can't look up an exact
+            // property value; the CirrusSearch "haswbstatement" query does an exact match
+            // on the IMDb ID (P345) statement instead.
+            var query = $"haswbstatement:P345={imdbId}";
+            var url = $"?action=query&list=search&srsearch={Uri.EscapeDataString(query)}&format=json&srlimit=1";
             var response = await _httpClient.GetAsync(url, cancellationToken);
             if (!response.IsSuccessStatusCode) return null;
 
             var content = await response.Content.ReadAsStringAsync(cancellationToken);
-            var searchResponse = JsonSerializer.Deserialize<WikidataSearchResponse>(content, _jsonOptions);
+            var searchResponse = JsonSerializer.Deserialize<WikidataStatementSearchResponse>(content, _jsonOptions);
 
-            if (searchResponse?.Search?.Count > 0)
-            {
-                // Verify it has the IMDb ID property
-                foreach (var result in searchResponse.Search)
-                {
-                    var entity = await GetEntityDataAsync(result.Id, cancellationToken);
-                    if (entity?.ImdbId == imdbId)
-                    {
-                        return result.Id;
-                    }
-                }
-                return searchResponse.Search[0].Id;
-            }
-
-            return null;
+            return searchResponse?.Query?.Search?.FirstOrDefault()?.Title;
         }
         catch (Exception ex)
         {
@@ -154,7 +144,7 @@ public class WikidataService : IWikidataService
 
             if (entityResponse?.Entities?.TryGetValue(entityId, out var entity) == true)
             {
-                return ParseEntityData(entity, entityId);
+                return await ParseEntityDataAsync(entity, entityId, cancellationToken);
             }
 
             return null;
@@ -166,7 +156,7 @@ public class WikidataService : IWikidataService
         }
     }
 
-    private WikidataMovieData ParseEntityData(WikidataEntity entity, string entityId)
+    private async Task<WikidataMovieData> ParseEntityDataAsync(WikidataEntity entity, string entityId, CancellationToken cancellationToken)
     {
         var data = new WikidataMovieData
         {
@@ -229,22 +219,53 @@ public class WikidataService : IWikidataService
             }
         }
 
-        // MPAA rating (P1658) - Content rating
-        if (entity.Claims.TryGetValue("P1658", out var mpaaClaims))
+        // MPA film rating (P1657). The value is a reference to a rating item (e.g. "R"),
+        // and content descriptors (nudity, violence, language, etc.) are attached as P7367
+        // qualifiers on the same statement.
+        string? ratingEntityId = null;
+        var descriptorEntityIds = new List<string>();
+
+        if (entity.Claims.TryGetValue("P1657", out var mpaaClaims))
         {
-            foreach (var claim in mpaaClaims)
+            var claim = mpaaClaims.FirstOrDefault();
+            ratingEntityId = GetEntityIdFromSnak(claim?.Mainsnak);
+
+            if (claim?.Qualifiers != null && claim.Qualifiers.TryGetValue("P7367", out var descriptorSnaks))
             {
-                var rating = claim.Mainsnak?.Datavalue?.Value?.ToString();
-                if (!string.IsNullOrEmpty(rating))
+                foreach (var snak in descriptorSnaks)
                 {
-                    data.MpaaRating = rating;
-                    break;
+                    var descriptorId = GetEntityIdFromSnak(snak);
+                    if (!string.IsNullOrEmpty(descriptorId))
+                    {
+                        descriptorEntityIds.Add(descriptorId);
+                    }
                 }
             }
         }
 
-        // Rating system (P1659) - for MPAA
-        // Country-specific ratings would be more complex, but we can get the main one
+        if (!string.IsNullOrEmpty(ratingEntityId) || descriptorEntityIds.Count > 0)
+        {
+            var idsToResolve = new List<string>(descriptorEntityIds);
+            if (!string.IsNullOrEmpty(ratingEntityId))
+            {
+                idsToResolve.Add(ratingEntityId);
+            }
+
+            var labels = await ResolveLabelsAsync(idsToResolve, cancellationToken);
+
+            if (!string.IsNullOrEmpty(ratingEntityId) && labels.TryGetValue(ratingEntityId, out var ratingLabel))
+            {
+                data.MpaaRating = ratingLabel;
+            }
+
+            foreach (var descriptorId in descriptorEntityIds)
+            {
+                if (labels.TryGetValue(descriptorId, out var descriptorLabel))
+                {
+                    data.ContentDescriptors.Add(descriptorLabel);
+                }
+            }
+        }
 
         // Genre (P136)
         if (entity.Claims.TryGetValue("P136", out var genreClaims))
@@ -275,6 +296,56 @@ public class WikidataService : IWikidataService
         return data;
     }
 
+    private static string? GetEntityIdFromSnak(WikidataSnak? snak)
+    {
+        if (snak?.Datavalue?.Value is JsonElement elem &&
+            elem.ValueKind == JsonValueKind.Object &&
+            elem.TryGetProperty("id", out var idProp))
+        {
+            return idProp.GetString();
+        }
+
+        return null;
+    }
+
+    private async Task<Dictionary<string, string>> ResolveLabelsAsync(IEnumerable<string> entityIds, CancellationToken cancellationToken)
+    {
+        var labels = new Dictionary<string, string>();
+        var ids = entityIds.Distinct().ToList();
+
+        if (ids.Count == 0)
+        {
+            return labels;
+        }
+
+        try
+        {
+            var url = $"?action=wbgetentities&ids={Uri.EscapeDataString(string.Join('|', ids))}&format=json&props=labels&languages=en";
+            var response = await _httpClient.GetAsync(url, cancellationToken);
+            if (!response.IsSuccessStatusCode) return labels;
+
+            var content = await response.Content.ReadAsStringAsync(cancellationToken);
+            var entityResponse = JsonSerializer.Deserialize<WikidataEntityResponse>(content, _jsonOptions);
+
+            if (entityResponse?.Entities != null)
+            {
+                foreach (var (id, entity) in entityResponse.Entities)
+                {
+                    if (entity.Labels?.TryGetValue("en", out var label) == true)
+                    {
+                        labels[id] = label.Value;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error resolving Wikidata labels for {Ids}", string.Join(',', ids));
+        }
+
+        return labels;
+    }
+
     private string BuildSearchQuery(string title, int? year)
     {
         var query = title;
@@ -300,6 +371,24 @@ public class WikidataService : IWikidataService
     {
         [JsonPropertyName("search")]
         public List<WikidataSearchResult> Search { get; set; } = new();
+    }
+
+    private class WikidataStatementSearchResponse
+    {
+        [JsonPropertyName("query")]
+        public WikidataStatementSearchQuery? Query { get; set; }
+    }
+
+    private class WikidataStatementSearchQuery
+    {
+        [JsonPropertyName("search")]
+        public List<WikidataStatementSearchResult>? Search { get; set; }
+    }
+
+    private class WikidataStatementSearchResult
+    {
+        [JsonPropertyName("title")]
+        public string Title { get; set; } = string.Empty;
     }
 
     private class WikidataSearchResult
@@ -348,6 +437,9 @@ public class WikidataService : IWikidataService
     {
         [JsonPropertyName("mainsnak")]
         public WikidataSnak Mainsnak { get; set; } = new();
+
+        [JsonPropertyName("qualifiers")]
+        public Dictionary<string, List<WikidataSnak>>? Qualifiers { get; set; }
     }
 
     private class WikidataSnak
@@ -375,6 +467,7 @@ public class WikidataMovieData
     public long Budget { get; set; }
     public long Revenue { get; set; }
     public string MpaaRating { get; set; } = string.Empty;
+    public List<string> ContentDescriptors { get; set; } = new();
     public List<string> Genres { get; set; } = new();
     public List<string> Countries { get; set; } = new();
 }

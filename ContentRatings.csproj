@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <AssemblyName>Jellyfin.Plugin.ContentRatings</AssemblyName>
     <RootNamespace>Jellyfin.Plugin.ContentRatings</RootNamespace>
-    <Version>1.0.13</Version>
-    <AssemblyVersion>1.0.13.0</AssemblyVersion>
-    <FileVersion>1.0.13.0</FileVersion>
+    <Version>1.1.0</Version>
+    <AssemblyVersion>1.1.0.0</AssemblyVersion>
+    <FileVersion>1.1.0.0</FileVersion>
     <Authors>ContentRatings</Authors>
-    <Description>Adds content ratings, budget/revenue stats, and age ratings to movies using free APIs (Wikidata)</Description>
+    <Description>Adds content advisory descriptors (nudity, violence, language), MPA ratings, and budget/revenue stats to movies using Wikidata - no API keys required</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/CrankyVase/Jellyfin-ContentRatings</PackageProjectUrl>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Configuration\configPage.html" />
+    <EmbeddedResource Include="Web\content-ratings.js" />
   </ItemGroup>
 
 </Project>

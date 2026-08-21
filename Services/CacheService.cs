@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Jellyfin.Plugin.ContentRatings.Configuration;
 using Jellyfin.Plugin.ContentRatings.Models;
+using MediaBrowser.Common.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -23,7 +24,8 @@ public class CacheService : ICacheService
 
     public CacheService(
         ILogger<CacheService> logger,
-        IOptions<PluginConfiguration> config)
+        IOptions<PluginConfiguration> config,
+        IApplicationPaths appPaths)
     {
         _logger = logger;
         _config = config.Value;
@@ -33,9 +35,8 @@ public class CacheService : ICacheService
             WriteIndented = true
         };
 
-        var pluginPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "plugins", "ContentRatings");
-        _cachePath = Path.Combine(pluginPath, "cache");
-        
+        _cachePath = Path.Combine(appPaths.PluginConfigurationsPath, "ContentRatings-cache");
+
         if (!Directory.Exists(_cachePath))
         {
             Directory.CreateDirectory(_cachePath);
